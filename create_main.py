@@ -71,7 +71,7 @@ def create_demo(max_delay=365, study_count=15, custom_modality=None, **kwargs):
 if __name__ == '__main__':
     """
     PS： 
-        - 文件顶部需要定义环境env_list = ('dev_api',)config.py中的环境列表
+        - 文件顶部定义了环境env_list = ('dev_api',)， 来源是config.py中配置的各个环境，列出来方便选择
         - environ指定env_list中的某个环境，根据环境获取参数
         
     参数说明 
