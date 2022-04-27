@@ -1,0 +1,9 @@
+.env
+__pycache__/*
+*.pyc
+.python-version
+.patch
+.idea/*
+save_root_dir/*
+original_data/*
+assets/*
