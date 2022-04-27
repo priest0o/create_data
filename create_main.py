@@ -62,9 +62,9 @@ def create_demo(max_delay=365, study_count=15, custom_modality=None, **kwargs):
                 modality = modality_list.pop(0)
             except IndexError:
                 modality = random.choice(no_img_modality)
-        report_path = r"/CT.pdf"
+        report_path = os.path.join(BASE_DIR, "CT.pdf")
         if modality == 'JPEG':
-            report_path = r"/BT.jpg"
+            report_path = os.path.join(BASE_DIR, "BT.jpg")
         main(pat_info, study_info, report_info, study_time=t, modality=modality, report_file=report_path, **kwargs)
 
 
