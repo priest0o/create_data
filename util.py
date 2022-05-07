@@ -175,5 +175,5 @@ def get_times(time_count, max_delay=7, min_delay=0, formatting='%Y-%m-%d %H:%M:%
 
 if __name__ == '__main__':
     print(get_pat_basic_info())
-    for i in get_time(5):
+    for i in get_times(5):
         print(i)

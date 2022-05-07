@@ -10,7 +10,7 @@ import report_handle
 # 环境列表
 env_list = ('dev_api', 'mti_demo')
 # 指定环境
-environ = 'mti_demo'
+environ = 'dev_api'
 # 环境参数
 env_data = getattr(EnvData(), environ)
 # ae参数
@@ -19,7 +19,7 @@ ae_data = getattr(AeData(), environ)
 modality_list = ['CT', 'MR', 'US', 'PT', 'XA', 'ECG', 'DR', 'BT', 'PD', 'JPEG', 'Video']
 no_img_modality = ('BT', 'PD', 'JPEG', 'Video')
 logger = Log()
-is_auth = False
+is_auth = True
 
 
 def main(pat_basic_info, study_basic_info, report_basic_info, has_image='1', modality=None,
@@ -49,8 +49,8 @@ def main(pat_basic_info, study_basic_info, report_basic_info, has_image='1', mod
 
 
 def create_demo(max_delay=365, study_count=15, custom_modality=None, **kwargs):
-    # pat_info = {'PatientID': 'PID2022042646175', 'PatientName': '周飞', 'IdCardNo': '532502198107084243', 'PatientSex': '2', 'Age': '31', 'Birthday': '1981-07-08'}
-    pat_info = get_pat_basic_info()
+    pat_info = {'PatientID': 'PID2022042646175', 'PatientName': '周飞', 'IdCardNo': '532502198107084243', 'PatientSex': '2', 'Age': '31', 'Birthday': '1981-07-08'}
+    # pat_info = get_pat_basic_info()
     time_list = get_times(study_count, max_delay=max_delay)
     # time_list = ['2022-02-22 15:00:00']
     for t in time_list:
@@ -63,9 +63,9 @@ def create_demo(max_delay=365, study_count=15, custom_modality=None, **kwargs):
                 modality = modality_list.pop(0)
             except IndexError:
                 modality = random.choice(no_img_modality)
-        # report_path = r"D:\4-script\study\create_data\original_data\133649331010.mp4"
+        report_path = r"D:\4-script\study\create_data\original_data\133649331010.mp4"
         # report_path = None
-        report_path = os.path.join(BASE_DIR, "CT.pdf")
+        # report_path = os.path.join(BASE_DIR, "CT.pdf")
         if modality == 'JPEG':
             report_path = os.path.join(BASE_DIR, "BT.jpg")
         main(pat_info, study_info, report_info, study_time=t, modality=modality, report_file=report_path, **kwargs)
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     max_delay_days-检查时间返回（当日往前n天内）
     custom_modality
         - random：随机选择modality_list-no_img_modality
-        - demo：demo演示数据，一次按modality_list造一个完整数据
+        - demo：demo演示数据，依次按modality_list造一个完整数据
         - 其他： 必须指定modality_list中的一个
     img_path：指定影像路径（现在支持文件夹，文件暂未支持），不知道根据modality去Original_data里面找一个
     has_image:
@@ -92,6 +92,6 @@ if __name__ == '__main__':
     """
     patient_count = 1
     study_per_patient = 1
-    max_delay_days = 7
+    max_delay_days = 2
     for i in range(patient_count):
-        create_demo(max_delay_days, study_per_patient, custom_modality='US', img_path=None, has_image='1')
+        create_demo(max_delay_days, study_per_patient, custom_modality='Video', img_path=None, has_image='1')
