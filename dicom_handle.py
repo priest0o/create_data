@@ -26,6 +26,7 @@ def c_store(save_info, ae_config):
     scp_ip = ae_config['scp_ip']
     scp_port = ae_config['scp_port']
     ae = AE(scu_ae)
+    logger.debug(f'local_ae_title: {scu_ae}, scp_ae_connect: {scp_ae}/{scp_ip}/{scp_port}')
     for media_storage_sop_class_uid in media_storage_sop_class_uid_list:
         ae.requested_contexts.append(build_context(media_storage_sop_class_uid))
     assoc = ae.associate(scp_ip, scp_port, ae_title=scp_ae)

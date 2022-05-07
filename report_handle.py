@@ -22,6 +22,7 @@ def send_report(report_file=None, **kwargs):
     token_client_secret = kwargs.pop('token_client_secret')
     kwargs['Sex'] = kwargs.pop('PatientSex')
     kwargs['HisId'] = kwargs['OrgCode'] + kwargs['PatientID']
+    is_auth = kwargs.pop('is_auth')
     # data中更新人员信息和检查相关信息
     data.update(kwargs)
     if report_file:
@@ -33,9 +34,13 @@ def send_report(report_file=None, **kwargs):
     data = encode_data[0]
     logger.info(f'--报告参数整理完成，准备发送报告请求,modality:{kwargs.get("Modality")} 检查时间:{kwargs.get("StudyTime")}--')
     # 请求头
-    send_report_headers = {
-        "Authorization": "Bearer {0}".format(get_token(auth_url, token_client_id, token_client_secret)),
-        'Content-Type': encode_data[1]}
+    if is_auth:
+        send_report_headers = {
+            "Authorization": "Bearer {0}".format(get_token(auth_url, token_client_id, token_client_secret)),
+            'Content-Type': encode_data[1]}
+    else:
+        send_report_headers = {'Content-Type': encode_data[1]}
+    logger.debug(f'header: {send_report_headers}   url: {report_url}')
     res = requests.post(report_url, headers=send_report_headers, data=data)
     if res.status_code != 200:
         logger.error('--报告发送失败--')

@@ -8,9 +8,9 @@ import dicom_handle
 import report_handle
 
 # 环境列表
-env_list = ('dev_api',)
+env_list = ('dev_api', 'mti_demo')
 # 指定环境
-environ = 'dev_api'
+environ = 'mti_demo'
 # 环境参数
 env_data = getattr(EnvData(), environ)
 # ae参数
@@ -19,6 +19,7 @@ ae_data = getattr(AeData(), environ)
 modality_list = ['CT', 'MR', 'US', 'PT', 'XA', 'ECG', 'DR', 'BT', 'PD', 'JPEG', 'Video']
 no_img_modality = ('BT', 'PD', 'JPEG', 'Video')
 logger = Log()
+is_auth = False
 
 
 def main(pat_basic_info, study_basic_info, report_basic_info, has_image='1', modality=None,
@@ -44,7 +45,7 @@ def main(pat_basic_info, study_basic_info, report_basic_info, has_image='1', mod
         report_file_info = get_report_file(report_file)
     report_handle.send_report(report_file=report_file_info, **pat_basic_info,
                               **study_basic_info, **env_data, **report_basic_info, StudyTime=study_time,
-                              Modality=modality, HasImage=has_image)
+                              Modality=modality, HasImage=has_image, is_auth=is_auth)
 
 
 def create_demo(max_delay=365, study_count=15, custom_modality=None, **kwargs):
@@ -62,6 +63,8 @@ def create_demo(max_delay=365, study_count=15, custom_modality=None, **kwargs):
                 modality = modality_list.pop(0)
             except IndexError:
                 modality = random.choice(no_img_modality)
+        # report_path = r"D:\4-script\study\create_data\original_data\133649331010.mp4"
+        # report_path = None
         report_path = os.path.join(BASE_DIR, "CT.pdf")
         if modality == 'JPEG':
             report_path = os.path.join(BASE_DIR, "BT.jpg")
@@ -91,4 +94,4 @@ if __name__ == '__main__':
     study_per_patient = 1
     max_delay_days = 7
     for i in range(patient_count):
-        create_demo(max_delay_days, study_per_patient, custom_modality=None, img_path=None, has_image='0')
+        create_demo(max_delay_days, study_per_patient, custom_modality='US', img_path=None, has_image='1')
