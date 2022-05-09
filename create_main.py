@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'cy'
 
+from glob import glob
 from config import EnvData, AeData, BASE_DIR
 from util import *
 import dicom_handle
@@ -19,8 +20,7 @@ ae_data = getattr(AeData(), environ)
 modality_list = ['CT', 'MR', 'US', 'PT', 'XA', 'ECG', 'DR', 'BT', 'PD', 'JPEG', 'Video']
 no_img_modality = ('BT', 'PD', 'JPEG', 'Video')
 logger = Log()
-is_auth = True
-
+root_report_path = os.path.join(BASE_DIR, 'report')
 
 def main(pat_basic_info, study_basic_info, report_basic_info, has_image='1', modality=None,
          study_time=time.strftime("%Y-%m-%d %H:%M:%S"), report_file=None, img_path=None):
@@ -48,29 +48,6 @@ def main(pat_basic_info, study_basic_info, report_basic_info, has_image='1', mod
                               Modality=modality, HasImage=has_image, is_auth=is_auth)
 
 
-def create_demo(max_delay=365, study_count=15, custom_modality=None, **kwargs):
-    pat_info = {'PatientID': 'PID2022042646175', 'PatientName': '周飞', 'IdCardNo': '532502198107084243', 'PatientSex': '2', 'Age': '31', 'Birthday': '1981-07-08'}
-    # pat_info = get_pat_basic_info()
-    time_list = get_times(study_count, max_delay=max_delay)
-    # time_list = ['2022-02-22 15:00:00']
-    for t in time_list:
-        study_info = get_study_basic_info()
-        report_info = get_report_basic_info()
-        if custom_modality:
-            modality = custom_modality
-        else:
-            try:
-                modality = modality_list.pop(0)
-            except IndexError:
-                modality = random.choice(no_img_modality)
-        report_path = r"D:\4-script\study\create_data\original_data\133649331010.mp4"
-        # report_path = None
-        # report_path = os.path.join(BASE_DIR, "CT.pdf")
-        if modality == 'JPEG':
-            report_path = os.path.join(BASE_DIR, "BT.jpg")
-        main(pat_info, study_info, report_info, study_time=t, modality=modality, report_file=report_path, **kwargs)
-
-
 if __name__ == '__main__':
     """
     PS： 
@@ -82,16 +59,52 @@ if __name__ == '__main__':
     study_per_patient-每个患者报告数量
     max_delay_days-检查时间返回（当日往前n天内）
     custom_modality
-        - random：随机选择modality_list-no_img_modality
+        - None：随机选择modality_list-no_img_modality
         - demo：demo演示数据，依次按modality_list造一个完整数据
         - 其他： 必须指定modality_list中的一个
-    img_path：指定影像路径（现在支持文件夹，文件暂未支持），不知道根据modality去Original_data里面找一个
+    is_auth指是否需要通过uap鉴权
+    img_path：指定影像路径（现在只支持文件夹级别），未指定根据modality去Original_data里面找一个
     has_image:
         - '0': 不要图像
         - '1': 带图像
+    has_report: 报告是否需要文件
+    pat_info = {'PatientID': 'PID2022042646175', 'PatientName': '周飞', 'IdCardNo': '532502198107084243', 'PatientSex': '2', 'Age': '31', 'Birthday': '1981-07-08'}
+    time_list = ['2020-05-22 15:00:00', '2020-09-22 15:00:00', '2022-04-22 15:00:00']
     """
     patient_count = 1
-    study_per_patient = 1
-    max_delay_days = 2
+    study_per_patient = 23
+    max_delay_days = 100
+    custom_modality = None
+    is_auth = True
+    img_path = None
+    report_path = None
+    has_image = '0'
+    has_report_file = True
+
     for i in range(patient_count):
-        create_demo(max_delay_days, study_per_patient, custom_modality='Video', img_path=None, has_image='1')
+        pat_info = get_pat_basic_info() # 随机获取患者基本信息
+        time_list = get_times(study_per_patient, max_delay=max_delay_days) # 获取过去max_delay_days天内，study_per_patient天的列表
+        for t in time_list:
+            study_info = get_study_basic_info() # 随机获取检查基本信息
+            report_info = get_report_basic_info() # 随机获取报告基本信息
+            if not custom_modality: # 随机一个modality，modality_list-no_img_modality
+                modality = random.choice(list(set(modality_list).difference(no_img_modality)))
+            elif custom_modality == 'demo': # demo数据，依次从modality_list选择创建数据
+                try:
+                    modality = modality_list.pop(0)
+                except IndexError:
+                    modality = random.choice(no_img_modality)
+            else: # 指定的modality，必须在modality_list中
+                modality = custom_modality
+                assert modality in modality_list, '请选择正确的modality'
+            report = None
+            if has_report_file:
+                if report_path:
+                    report = report_path
+                else:
+                    match_reports = glob(os.path.join(root_report_path, f'{modality}*'))
+                    report = match_reports[0] if match_reports else os.path.join(BASE_DIR, "CT.pdf")
+            logger.debug(f'{t}报告文件路径{report}')
+            main(pat_info, study_info, report_info, has_image=has_image, modality=modality, study_time=t, report_file=report, img_path=img_path)
+
+
