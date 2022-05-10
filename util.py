@@ -21,6 +21,7 @@ fake = Faker('zh_CN')
 # modality:  CT/MR/PT/US/XA/ECG/JPEG/Video
 # blood test，pathological diagnosis BT和PD
 
+
 class Log:
     """
     日志类：目前是控制台输出，有需要可以加文本输出handler
@@ -175,5 +176,5 @@ def get_times(time_count, max_delay=7, min_delay=0, formatting='%Y-%m-%d %H:%M:%
 
 if __name__ == '__main__':
     print(get_pat_basic_info())
-    for i in get_times(5):
-        print(i)
+    print(list(get_times(30, 900)))
+
