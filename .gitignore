@@ -8,7 +8,7 @@ save_root_dir/*
 original_data/*
 assets/*
 report/*
-*.mps
+*.mp4
 *.png
 *.jpg
 *.jpeg
