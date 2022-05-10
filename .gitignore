@@ -7,3 +7,9 @@ __pycache__/*
 save_root_dir/*
 original_data/*
 assets/*
+report/*
+*.mps
+*.png
+*.jpg
+*.jpeg
+*.rpt

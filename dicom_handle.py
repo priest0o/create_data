@@ -3,13 +3,15 @@
 __author__ = 'cy'
 
 import os
+from xpinyin import Pinyin
 from collections import defaultdict
 from pydicom import dcmread
 from tqdm import tqdm
-from pynetdicom import AE, build_context
+from pynetdicom import AE, build_context, sop_class
 from util import Log, get_uid
 from config import BASE_DIR
 logger = Log()
+pinyin = Pinyin()
 
 
 # debug_logger()
@@ -29,6 +31,7 @@ def c_store(save_info, ae_config):
     logger.debug(f'local_ae_title: {scu_ae}, scp_ae_connect: {scp_ae}/{scp_ip}/{scp_port}')
     for media_storage_sop_class_uid in media_storage_sop_class_uid_list:
         ae.requested_contexts.append(build_context(media_storage_sop_class_uid))
+    ae.requested_contexts.append(build_context('1.2.840.10008.5.1.4.1.1.1'))
     assoc = ae.associate(scp_ip, scp_port, ae_title=scp_ae)
     if not assoc.is_established:
         logger.error('Association rejected, aborted or never connected')
@@ -39,8 +42,7 @@ def c_store(save_info, ae_config):
         for file in tqdm(files, desc='归档中....'):
             file_path = os.path.join(root, file)
             ds = dcmread(file_path, force=True)
-            status = assoc.send_c_store(ds)
-            logger.debug(f'c-store {status} {file}')
+            assoc.send_c_store(ds)
     logger.info('c-store finish')
     assoc.release()
 
@@ -65,6 +67,8 @@ def create_new_study(filepath, **kwargs):
     # 遍历原始文件生成新文件
     for root, path, files in os.walk(filepath):
         for file in tqdm(files, desc='生成新检查中....'):
+            if not file.endswith('dcm'):
+                continue
             file_path = os.path.join(root, file)
             ds = dcmread(file_path, force=True)
             media_storage_sop_class_uid_list.add(ds.file_meta.MediaStorageSOPClassUID)
@@ -81,6 +85,9 @@ def create_new_study(filepath, **kwargs):
             kwargs.update({'SeriesInstanceUID': series_uid, 'SOPInstanceUID': sop_uid})
             try:
                 for tag, value in kwargs.items():
+                    if tag == 'PatientName':
+                        if 'UTF8' not in ds['PatientName'].value.encodings:
+                            value = pinyin.get_pinyin(value)
                     ds[tag].value = value
                 ds.save_as(os.path.join(save_path, f'{sop_uid}.dcm'), write_like_original=False)
             except Exception as e:

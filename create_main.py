@@ -22,30 +22,29 @@ no_img_modality = ('BT', 'PD', 'JPEG', 'Video')
 logger = Log()
 root_report_path = os.path.join(BASE_DIR, 'report')
 
-def main(pat_basic_info, study_basic_info, report_basic_info, has_image='1', modality=None,
-         study_time=time.strftime("%Y-%m-%d %H:%M:%S"), report_file=None, img_path=None):
+
+def main(pat_basic_info, study_basic_info, report_basic_info, has_image_status='1', modality=None,
+         study_time=time.strftime("%Y-%m-%d %H:%M:%S"), report_file=None, img_info=None):
     if not modality:
         modality = random.choice(modality_list)
-    if modality not in no_img_modality and has_image == '1':
+    if modality not in no_img_modality and has_image_status == '1':
         # 如果没有指定，随机获取一组对应modality文件夹的影像
-        if not img_path:
+        if not img_info:
             original_root = os.path.join(BASE_DIR, f'original_data{os.sep}{modality}')
-            img_path = os.path.join(original_root, random.choice(os.listdir(original_root)))
-        logger.info(f'修改{modality}影像，原始路径{img_path}')
-        save_info = dicom_handle.create_new_study(img_path, PatientID=pat_basic_info['PatientID'],
+            img_info = os.path.join(original_root, random.choice(os.listdir(original_root)))
+        logger.info(f'修改{modality}影像，原始路径{img_info}')
+        save_info = dicom_handle.create_new_study(img_info, PatientID=pat_basic_info['PatientID'],
                                                   PatientName=pat_basic_info['PatientName'],
                                                   PatientSex=pat_basic_info['PatientSex'], **study_basic_info)
         logger.info(f'归档{pat_basic_info["PatientName"]}{modality}影像，新文件路径{save_info[0]}，请稍候....')
         dicom_handle.c_store(save_info, ae_data)
     else:
-        has_image = '0'
+        has_image_status = '0'
     # 如果未指定报告文件，则不带文件上传报告
-    report_file_info = None
-    if report_file:
-        report_file_info = get_report_file(report_file)
+    report_file_info = None if not report_file else get_report_file(report_file)
     report_handle.send_report(report_file=report_file_info, **pat_basic_info,
                               **study_basic_info, **env_data, **report_basic_info, StudyTime=study_time,
-                              Modality=modality, HasImage=has_image, is_auth=is_auth)
+                              Modality=modality, HasImage=has_image_status, is_auth=is_auth)
 
 
 if __name__ == '__main__':
@@ -68,43 +67,44 @@ if __name__ == '__main__':
         - '0': 不要图像
         - '1': 带图像
     has_report: 报告是否需要文件
-    pat_info = {'PatientID': 'PID2022042646175', 'PatientName': '周飞', 'IdCardNo': '532502198107084243', 'PatientSex': '2', 'Age': '31', 'Birthday': '1981-07-08'}
+    pat_info = {'PatientID': 'PID2022042646175', 'PatientName': '周飞', 'IdCardNo': '532502198107084243', 
+                'PatientSex': '2', 'Age': '31', 'Birthday': '1981-07-08'}
     time_list = ['2020-05-22 15:00:00', '2020-09-22 15:00:00', '2022-04-22 15:00:00']
     """
     patient_count = 1
-    study_per_patient = 23
-    max_delay_days = 100
-    custom_modality = None
+    study_per_patient = 1
+    max_delay_days = 7
+    custom_modality = 'XA'  # 'MR', 'US', 'PT', 'XA', 'ECG', 'DR'
     is_auth = True
     img_path = None
     report_path = None
-    has_image = '0'
+    has_image = '1'
     has_report_file = True
 
     for i in range(patient_count):
-        pat_info = get_pat_basic_info() # 随机获取患者基本信息
-        time_list = get_times(study_per_patient, max_delay=max_delay_days) # 获取过去max_delay_days天内，study_per_patient天的列表
+        pat_info = get_pat_basic_info()  # 随机获取患者基本信息
+        time_list = get_times(study_per_patient, max_delay=max_delay_days)  # 获取过去max_delay_days天内，study_per_patient天的列表
         for t in time_list:
-            study_info = get_study_basic_info() # 随机获取检查基本信息
-            report_info = get_report_basic_info() # 随机获取报告基本信息
-            if not custom_modality: # 随机一个modality，modality_list-no_img_modality
-                modality = random.choice(list(set(modality_list).difference(no_img_modality)))
-            elif custom_modality == 'demo': # demo数据，依次从modality_list选择创建数据
+            study_info = get_study_basic_info()  # 随机获取检查基本信息
+            report_info = get_report_basic_info()  # 随机获取报告基本信息
+            if not custom_modality:  # 随机一个modality，modality_list-no_img_modality
+                current_modality = random.choice(list(set(modality_list).difference(no_img_modality)))
+            elif custom_modality == 'demo':  # demo数据，依次从modality_list选择创建数据
                 try:
-                    modality = modality_list.pop(0)
+                    current_modality = modality_list.pop(0)
                 except IndexError:
-                    modality = random.choice(no_img_modality)
-            else: # 指定的modality，必须在modality_list中
-                modality = custom_modality
-                assert modality in modality_list, '请选择正确的modality'
+                    current_modality = random.choice(no_img_modality)
+            else:  # 指定的modality，必须在modality_list中
+                current_modality = custom_modality
+            if current_modality not in modality_list:
+                raise ValueError('请选择正确的modality')
             report = None
             if has_report_file:
                 if report_path:
                     report = report_path
                 else:
-                    match_reports = glob(os.path.join(root_report_path, f'{modality}*'))
+                    match_reports = glob(os.path.join(root_report_path, f'{current_modality}*'))
                     report = match_reports[0] if match_reports else os.path.join(BASE_DIR, "CT.pdf")
             logger.debug(f'{t}报告文件路径{report}')
-            main(pat_info, study_info, report_info, has_image=has_image, modality=modality, study_time=t, report_file=report, img_path=img_path)
-
-
+            main(pat_info, study_info, report_info, has_image_status=has_image, modality=current_modality, study_time=t,
+                 report_file=report, img_info=img_path)
