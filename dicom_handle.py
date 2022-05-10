@@ -71,10 +71,14 @@ def create_new_study(filepath, **kwargs):
                 continue
             file_path = os.path.join(root, file)
             ds = dcmread(file_path, force=True)
-            media_storage_sop_class_uid_list.add(ds.file_meta.MediaStorageSOPClassUID)
+            try:
+                media_storage_sop_class_uid_list.add(ds.file_meta.MediaStorageSOPClassUID)
+            except AttributeError:
+                logger.warning(f'{file} has no attribute MediaStorageSOPClassUID')
             try:
                 original_series = ds['SeriesNumber'].value
             except KeyError:
+                logger.warning(f'{file} has no attribute SeriesNumber, 丢掉')
                 continue
             sop_uid = get_uid('SOPInstanceUID')
             if not series_dict[original_series]:
@@ -83,16 +87,16 @@ def create_new_study(filepath, **kwargs):
                 save_path = os.path.join(save_root_dir, series_uid)
                 os.mkdir(save_path)
             kwargs.update({'SeriesInstanceUID': series_uid, 'SOPInstanceUID': sop_uid})
+            if kwargs.get('PatientName', None):
+                kwargs['PatientName'] = pinyin.get_pinyin(kwargs['PatientName'], splitter=' ').title()
             try:
                 for tag, value in kwargs.items():
-                    if tag == 'PatientName':
-                        if 'UTF8' not in ds['PatientName'].value.encodings:
-                            value = pinyin.get_pinyin(value)
                     ds[tag].value = value
                 ds.save_as(os.path.join(save_path, f'{sop_uid}.dcm'), write_like_original=False)
             except Exception as e:
                 logger.error(e)
-
+    if not media_storage_sop_class_uid_list:
+        raise ValueError('has no attribute MediaStorageSOPClassUID')
     logger.info(f"create {kwargs.get('PatientName')} study {kwargs.get('StudyInstanceUID')} finish")
     return save_root_dir, media_storage_sop_class_uid_list
 

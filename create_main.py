@@ -67,14 +67,11 @@ if __name__ == '__main__':
         - '0': 不要图像
         - '1': 带图像
     has_report: 报告是否需要文件
-    pat_info = {'PatientID': 'PID2022042646175', 'PatientName': '周飞', 'IdCardNo': '532502198107084243', 
-                'PatientSex': '2', 'Age': '31', 'Birthday': '1981-07-08'}
-    time_list = ['2020-05-22 15:00:00', '2020-09-22 15:00:00', '2022-04-22 15:00:00']
     """
     patient_count = 1
     study_per_patient = 1
-    max_delay_days = 7
-    custom_modality = 'XA'  # 'MR', 'US', 'PT', 'XA', 'ECG', 'DR'
+    max_delay_days = 1
+    custom_modality = 'MR'  # 'MR', 'US', 'PT', 'XA', 'ECG', 'DR'
     is_auth = True
     img_path = None
     report_path = None
@@ -82,6 +79,9 @@ if __name__ == '__main__':
     has_report_file = True
 
     for i in range(patient_count):
+        # pat_info = {'PatientID': 'PID2022042646175', 'PatientName': '周飞', 'IdCardNo': '532502198107084243',
+        #             'PatientSex': '2', 'Age': '31', 'Birthday': '1981-07-08'}
+        # time_list = ['2020-05-22 15:00:00', '2020-09-22 15:00:00', '2022-04-22 15:00:00']
         pat_info = get_pat_basic_info()  # 随机获取患者基本信息
         time_list = get_times(study_per_patient, max_delay=max_delay_days)  # 获取过去max_delay_days天内，study_per_patient天的列表
         for t in time_list:
