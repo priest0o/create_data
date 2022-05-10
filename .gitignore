@@ -13,3 +13,4 @@ report/*
 *.jpg
 *.jpeg
 *.rpt
+dcmfiles/*
