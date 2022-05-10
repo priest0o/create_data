@@ -82,7 +82,7 @@ if __name__ == '__main__':
     max_delay_days = 30
     custom_modality = None
     is_auth = False
-    img_path = r'D:\4-script\study\create_data\original_data\other\CT\CT-1-1\CT.dcm'
+    img_path = None
     report_path = None
     has_image = '1'
     has_report_file = True

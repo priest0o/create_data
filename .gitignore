@@ -4,8 +4,8 @@ __pycache__/*
 .python-version
 .patch
 .idea/*
-save_root_dir/*
-original_data/*
+/save_root_dir/
+/original_data/
 assets/*
 report/*
 *.mp4
@@ -13,4 +13,5 @@ report/*
 *.jpg
 *.jpeg
 *.rpt
-dcmfiles/*
+/dcmfiles/
+
