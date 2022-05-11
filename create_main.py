@@ -11,7 +11,7 @@ import report_handle
 # 环境列表
 env_list = ('dev_api', 'mti_demo')
 # 指定环境
-environ = 'mti_demo'
+environ = 'dev_api'
 # 环境参数
 env_data = getattr(EnvData(), environ)
 # ae参数
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     study_per_patient = 1
     max_delay_days = 30
     custom_modality = None
-    is_auth = False
+    is_auth = True
     img_path = None
     report_path = None
     has_image = '1'
