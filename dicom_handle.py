@@ -20,7 +20,7 @@ pinyin = Pinyin()
 def c_store(save_info, ae_config):
     """
     归档影像到对应的AE
-    :param save_info: [文件夹, media_storage_sop_class_uid, transfer_syntax_uid]
+    :param save_info: [文件夹, media_storage_sop_class_uid_list]
     :param ae_config: AE信息字典
     :return:
     """
@@ -52,9 +52,9 @@ def c_store(save_info, ae_config):
 def create_new_study(filepath, **kwargs):
     """
     根据原始文件构造新文件
-    :param filepath: 原始文件路径（文件夹）
+    :param filepath: 原始文件路径，如果是文件夹根据原始文件构造新文件，如果是文件，读取SeriesNum、ImgNum构造新文件
     :param kwargs: 需要替换的tag字典
-    :return: 新文件路径（文件夹）、c-store需要的media_storage_sop_class_uid, transfer_syntax_uid
+    :return: 新文件路径（文件夹）、c-store需要的media_storage_sop_class_uid_list
     """
     logger.info(f"create {kwargs.get('PatientName')} study {kwargs.get('StudyInstanceUID')} start")
     # 根据患者信息和检查id新建路径

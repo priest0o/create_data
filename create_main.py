@@ -18,6 +18,7 @@ env_data = getattr(EnvData(), environ)
 ae_data = getattr(AeData(), environ)
 
 modality_list = ['CT', 'MR', 'US', 'PT', 'XA', 'ECG', 'DR', 'BT', 'PD', 'JPEG', 'Video']
+modality_set = set(modality_list)
 no_img_modality = ('BT', 'PD', 'JPEG', 'Video', 'ECG')
 logger = Log()
 root_report_path = os.path.join(BASE_DIR, 'report')
@@ -28,7 +29,7 @@ def main(pat_basic_info, study_basic_info, report_basic_info, has_image_status='
          series_num=1, img_num=1):
     if not modality:
         modality = random.choice(modality_list)
-    if modality in set(modality_list).difference(no_img_modality) and has_image_status == '1':
+    if modality in modality_set.difference(no_img_modality) and has_image_status == '1':
         # 如果没有指定，随机获取一组对应modality文件夹的影像
         if not img_info:
             original_root = os.path.join(BASE_DIR, f'original_data{os.sep}{modality}')
@@ -84,7 +85,7 @@ if __name__ == '__main__':
     is_auth = True
     img_path = None
     report_path = None
-    has_image = '0'
+    has_image = '1'
     has_report_file = True
     """
     如果需要按自定义的一张图，自定义Series数量和Image数量，设置如下参数
@@ -93,12 +94,14 @@ if __name__ == '__main__':
     image_per_series = 2
 
     for i in range(patient_count):
-        pat_info = get_pat_basic_info()  # 随机获取患者基本信息
+        # pat_info = get_pat_basic_info()  # 随机获取患者基本信息
+        pat_info = {'PatientID': 'PID202205116549', 'PatientName': '张浩', 'IdCardNo': '411724195909164330',
+                    'PatientSex': '1', 'Age': '63', 'Birthday': '1959-09-16'}
         time_list = get_times(study_per_patient, max_delay=max_delay_days)  # 获取过去max_delay_days天内，study_per_patient天的列表
         for t in time_list:
             study_info = get_study_basic_info()  # 随机获取检查基本信息
             if not custom_modality:  # 随机一个modality，modality_list-no_img_modality
-                current_modality = random.choice(list(set(modality_list).difference(no_img_modality)))
+                current_modality = random.choice(list(modality_set.difference(no_img_modality)))
             elif custom_modality == 'demo':  # demo数据，依次从modality_list选择创建数据
                 try:
                     current_modality = modality_list.pop(0)
@@ -121,8 +124,8 @@ if __name__ == '__main__':
 
 """
 demo数据专用患者, 替换for循环中的随机患者和日期
-    pat_info = {'PatientID': 'PID2022042646175', 'PatientName': '周飞', 'IdCardNo': '532502198107084243',
-                'PatientSex': '2', 'Age': '31', 'Birthday': '1981-07-08'}
+    pat_info = {'PatientID': 'PID202205116549', 'PatientName': '张浩', 'IdCardNo': '411724195909164330',
+                'PatientSex': '1', 'Age': '63', 'Birthday': '1959-09-16'}
     time_list = ['2022-02-27 17:46:11', '2022-02-21 17:46:11', '2022-01-24 17:46:11', '2022-04-28 17:46:11', 
     '2022-01-09 17:46:11', '2020-11-20 17:46:11', '2022-03-14 17:46:11', '2020-09-08 17:46:11', '2019-12-26 17:46:11', 
     '2020-11-02 17:46:11', '2020-11-18 17:46:11', '2020-12-12 17:46:11', '2022-03-21 17:46:11', '2021-05-28 17:46:11', 

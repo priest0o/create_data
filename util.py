@@ -8,7 +8,7 @@ import time
 import datetime
 import os
 from hashlib import md5
-LOG_LEVEL = logging.DEBUG
+LOG_LEVEL = logging.INFO
 
 fake = Faker('zh_CN')
 
@@ -22,7 +22,7 @@ fake = Faker('zh_CN')
 # blood test，pathological diagnosis BT和PD
 modality_list = ['CT', 'MR', 'US', 'PT', 'XA', 'ECG', 'DR', 'BT', 'PD', 'JPEG', 'Video']
 procedure_list = ['左膝关节CT', 'MR颈部，MR腰椎', 'US膀胱彩超', 'PT胸部平扫', '血管成像平扫', '心电图',
-                           'MR左手正斜位', '乙肝检查', '分子病理检查', '床旁腹部', '甲状腺彩超']
+                           'DR左手正斜位', '乙肝检查', '分子病理检查', '床旁腹部', '甲状腺彩超']
 procedure_name_dict = dict(zip(modality_list, procedure_list))
 
 
