@@ -69,7 +69,7 @@ if __name__ == '__main__':
         - 其他：自定义modality，不在modality_list-no_img_modality范围内的话不传图
     is_auth：是否需要通过uap鉴权
     img_path：指定影像路径
-        - 未指定根据modality去Original_data里面找一个字文件夹
+        - 未指定根据modality去Original_data里面找一个子文件夹
         - 指定文件夹则修改并上次文件夹下的所有dcm文件
         - 指定文件则配合series_per_study和image_per_series参数生成指定数量图像
     has_image:
@@ -105,7 +105,7 @@ if __name__ == '__main__':
                     current_modality = modality_list.pop(0)
                 except IndexError:
                     current_modality = random.choice(no_img_modality)
-            else:  # 指定的modality，必须在modality_list中
+            else:  # 指定的modality字符串
                 current_modality = custom_modality
             report = None
             if has_report_file:
