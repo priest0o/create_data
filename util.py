@@ -20,6 +20,10 @@ fake = Faker('zh_CN')
 # modality
 # modality:  CT/MR/PT/US/XA/ECG/JPEG/Video
 # blood test，pathological diagnosis BT和PD
+modality_list = ['CT', 'MR', 'US', 'PT', 'XA', 'ECG', 'DR', 'BT', 'PD', 'JPEG', 'Video']
+procedure_list = ['左膝关节CT', 'MR颈部，MR腰椎', 'US膀胱彩超', 'PT胸部平扫', '血管成像平扫', '心电图',
+                           'MR左手正斜位', '乙肝检查', '分子病理检查', '床旁腹部', '甲状腺彩超']
+procedure_name_dict = dict(zip(modality_list, procedure_list))
 
 
 class Log:
@@ -113,7 +117,7 @@ def get_study_basic_info():
     return result
 
 
-def get_report_basic_info():
+def get_report_basic_info(modality=None):
     """
     生成报告动态信息：ReportDoctorName、AuditDoctorName、ApplyDoctor、ReportID、HisApplyNo、HisMedCardNo
     :return: 信息字典
@@ -124,7 +128,9 @@ def get_report_basic_info():
         'ApplyDoctor': fake.name(),
         'ReportID': f'RepID{time.strftime("%Y%m%d")}{fake.pystr(max_chars=7)}',
         'HisApplyNo': f'HIS{fake.random_number(5, fix_len=True)}||{fake.random_number(3, fix_len=True)}',
-        'HisMedCardNo': f'HIS_CARD{fake.random_number(5, fix_len=True)}'
+        'HisMedCardNo': f'HIS_CARD{fake.random_number(5, fix_len=True)}',
+        'ProcedureName': procedure_name_dict.get(modality) if procedure_name_dict.get(modality, None)
+        else random.choice(procedure_list)
     }
     return result
 

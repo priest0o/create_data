@@ -18,7 +18,7 @@ env_data = getattr(EnvData(), environ)
 ae_data = getattr(AeData(), environ)
 
 modality_list = ['CT', 'MR', 'US', 'PT', 'XA', 'ECG', 'DR', 'BT', 'PD', 'JPEG', 'Video']
-no_img_modality = ('BT', 'PD', 'JPEG', 'Video')
+no_img_modality = ('BT', 'PD', 'JPEG', 'Video', 'ECG')
 logger = Log()
 root_report_path = os.path.join(BASE_DIR, 'report')
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     is_auth：是否需要通过uap鉴权
     img_path：指定影像路径
         - 未指定根据modality去Original_data里面找一个子文件夹
-        - 指定文件夹则修改并上次文件夹下的所有dcm文件
+        - 指定文件夹则修改并上传文件夹下的所有dcm文件
         - 指定文件则配合series_per_study和image_per_series参数生成指定数量图像
     has_image:
         - '0': 不要图像
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     is_auth = True
     img_path = None
     report_path = None
-    has_image = '1'
+    has_image = '0'
     has_report_file = True
     """
     如果需要按自定义的一张图，自定义Series数量和Image数量，设置如下参数
@@ -97,7 +97,6 @@ if __name__ == '__main__':
         time_list = get_times(study_per_patient, max_delay=max_delay_days)  # 获取过去max_delay_days天内，study_per_patient天的列表
         for t in time_list:
             study_info = get_study_basic_info()  # 随机获取检查基本信息
-            report_info = get_report_basic_info()  # 随机获取报告基本信息
             if not custom_modality:  # 随机一个modality，modality_list-no_img_modality
                 current_modality = random.choice(list(set(modality_list).difference(no_img_modality)))
             elif custom_modality == 'demo':  # demo数据，依次从modality_list选择创建数据
@@ -107,6 +106,7 @@ if __name__ == '__main__':
                     current_modality = random.choice(no_img_modality)
             else:  # 指定的modality字符串
                 current_modality = custom_modality
+            report_info = get_report_basic_info(current_modality)  # 随机获取报告基本信息
             report = None
             if has_report_file:
                 if report_path:
