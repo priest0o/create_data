@@ -94,9 +94,7 @@ if __name__ == '__main__':
     image_per_series = 2
 
     for i in range(patient_count):
-        # pat_info = get_pat_basic_info()  # 随机获取患者基本信息
-        pat_info = {'PatientID': 'PID202205116549', 'PatientName': '张浩', 'IdCardNo': '411724195909164330',
-                    'PatientSex': '1', 'Age': '63', 'Birthday': '1959-09-16'}
+        pat_info = get_pat_basic_info()  # 随机获取患者基本信息
         time_list = get_times(study_per_patient, max_delay=max_delay_days)  # 获取过去max_delay_days天内，study_per_patient天的列表
         for t in time_list:
             study_info = get_study_basic_info()  # 随机获取检查基本信息
