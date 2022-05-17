@@ -27,6 +27,8 @@ root_report_path = os.path.join(BASE_DIR, 'report')
 def main(pat_basic_info, study_basic_info, report_basic_info, has_image_status='1', modality=None,
          study_time=time.strftime("%Y-%m-%d %H:%M:%S"), report_file=None, img_info=None, auth=True,
          series_num=1, img_num=1):
+    StudyDate = study_time.split(' ')[0]  # 待定
+    StudyTime = study_time.split(' ')[1]  # 待定
     if not modality:
         modality = random.choice(modality_list)
     if modality in modality_set.difference(no_img_modality) and has_image_status == '1':
@@ -38,8 +40,6 @@ def main(pat_basic_info, study_basic_info, report_basic_info, has_image_status='
         save_info = dicom_handle.create_new_study(img_info, PatientID=pat_basic_info['PatientID'],
                                                   PatientName=pat_basic_info['PatientName'],
                                                   PatientSex=pat_basic_info['PatientSex'],
-                                                  StudyDate=study_time.split(' ')[0],
-                                                  StudyTime=study_time.split(' ')[1],
                                                   SeriesNum=series_num,
                                                   ImgNum=img_num,
                                                   **study_basic_info)
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     """
     patient_count = 1
     study_per_patient = 1
-    max_delay_days = 30
+    max_delay_days = 3
     custom_modality = None
     is_auth = True
     img_path = None
@@ -90,8 +90,8 @@ if __name__ == '__main__':
     """
     如果需要按自定义的一张图，自定义Series数量和Image数量，设置如下参数
     """
-    series_per_study = 2
-    image_per_series = 2
+    series_per_study = 1
+    image_per_series = 1
 
     for i in range(patient_count):
         pat_info = get_pat_basic_info()  # 随机获取患者基本信息
@@ -99,7 +99,8 @@ if __name__ == '__main__':
         for t in time_list:
             study_info = get_study_basic_info()  # 随机获取检查基本信息
             if not custom_modality:  # 随机一个modality，modality_list-no_img_modality
-                current_modality = random.choice(list(modality_set.difference(no_img_modality)))
+                # current_modality = random.choice(list(modality_set.difference(no_img_modality)))
+                current_modality = random.choice(modality_list)
             elif custom_modality == 'demo':  # demo数据，依次从modality_list选择创建数据
                 try:
                     current_modality = modality_list.pop(0)
@@ -122,13 +123,17 @@ if __name__ == '__main__':
 
 """
 demo数据专用患者, 替换for循环中的随机患者和日期
-    pat_info = {'PatientID': 'PID202205116549', 'PatientName': '张浩', 'IdCardNo': '411724195909164330',
-                'PatientSex': '1', 'Age': '63', 'Birthday': '1959-09-16'}
-    time_list = ['2022-02-27 17:46:11', '2022-02-21 17:46:11', '2022-01-24 17:46:11', '2022-04-28 17:46:11', 
-    '2022-01-09 17:46:11', '2020-11-20 17:46:11', '2022-03-14 17:46:11', '2020-09-08 17:46:11', '2019-12-26 17:46:11', 
-    '2020-11-02 17:46:11', '2020-11-18 17:46:11', '2020-12-12 17:46:11', '2022-03-21 17:46:11', '2021-05-28 17:46:11', 
-    '2021-01-29 17:46:11', '2020-10-17 17:46:11', '2022-02-17 17:46:11', '2020-12-03 17:46:11', '2021-05-16 17:46:11', 
-    '2020-01-28 17:46:11', '2022-04-20 17:46:11', '2020-06-04 17:46:11', '2020-03-16 17:46:11', '2021-04-08 17:46:11', 
-    '2020-08-18 17:46:11', '2022-03-06 17:46:11', '2021-02-01 17:46:11', '2021-05-11 17:46:11', '2021-08-20 17:46:11', 
-    '2021-03-09 17:46:11']
+    pat_info = {'PatientID': 'PID2022051650995', 'PatientName': '余莉', 'IdCardNo': '220301194804303667', 'InsuranceId': 'Y57652884', 'PhoneNumber': '15285261557', 'PatientSex': '2', 'Age': '74', 'Birthday': '1948-04-30'}
+    time_list = ['2022-02-27 17:46:11', '2022-02-21 17:46:11', '2022-01-24 17:46:11', '2022-04-28 17:46:11',
+                 '2022-01-09 17:46:11', '2020-11-20 17:46:11', '2022-03-14 17:46:11', '2020-09-08 17:46:11',
+                 '2019-12-26 17:46:11',
+                 '2020-11-02 17:46:11', '2020-11-18 17:46:11', '2020-12-12 17:46:11', '2022-03-21 17:46:11',
+                 '2021-05-28 17:46:11',
+                 '2021-01-29 17:46:11', '2020-10-17 17:46:11', '2022-02-17 17:46:11', '2020-12-03 17:46:11',
+                 '2021-05-16 17:46:11',
+                 '2020-01-28 17:46:11', '2022-04-20 17:46:11', '2020-06-04 17:46:11', '2020-03-16 17:46:11',
+                 '2021-04-08 17:46:11',
+                 '2020-08-18 17:46:11', '2022-03-06 17:46:11', '2021-02-01 17:46:11', '2021-05-11 17:46:11',
+                 '2021-08-20 17:46:11',
+                 '2021-03-09 17:46:11']
 """

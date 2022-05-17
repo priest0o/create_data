@@ -25,12 +25,12 @@ class EnvData:
         'ProcedureOffice': 'RAD'
     }
     mti_demo = {
-        'cetus_url': 'http://cgs.10.6.5.244.sslip.io',
+        'cetus_url': 'http://10.6.5.244:30912',
         'OrgCode': 'lc20200101',
         'LocationName': 'United-imaging Management',
-        'auth_url': 'http://oauth.10.6.5.244.sslip.io',
-        'token_client_id': 'D4qvWxbYPc6dy5fU',
-        'token_client_secret': 'bf8871b718a2729eeaaac1d3d71528bdf4f8e9960a65dbce00197a6c78b4ad16',
+        'auth_url': 'http://shenzhou.10.6.5.244.sslip.io/auth',
+        'token_client_id': 'k5bcwoA7XDmTWZ46',
+        'token_client_secret': 'f1ff6b4244b29c0ee53c32952dc4d1228e7ac690f7e8dff8ee1495c17f034e2d',
         'ProcedureOffice': 'RAD'
     }
 

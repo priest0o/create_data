@@ -8,7 +8,7 @@ import time
 import datetime
 import os
 from hashlib import md5
-LOG_LEVEL = logging.INFO
+LOG_LEVEL = logging.DEBUG
 
 fake = Faker('zh_CN')
 
