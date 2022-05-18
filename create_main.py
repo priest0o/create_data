@@ -80,8 +80,8 @@ if __name__ == '__main__':
     """
     patient_count = 1
     study_per_patient = 1
-    max_delay_days = 3
-    custom_modality = None
+    max_delay_days = 0
+    custom_modality = 'demo'
     is_auth = True
     img_path = None
     report_path = None
@@ -123,7 +123,7 @@ if __name__ == '__main__':
 
 """
 demo数据专用患者, 替换for循环中的随机患者和日期
-    pat_info = {'PatientID': 'PID2022051650995', 'PatientName': '余莉', 'IdCardNo': '220301194804303667', 'InsuranceId': 'Y57652884', 'PhoneNumber': '15285261557', 'PatientSex': '2', 'Age': '74', 'Birthday': '1948-04-30'}
+    pat_info = {'PatientID': 'PID202205184239', 'PatientName': '演示', 'IdCardNo': '513430194711048539', 'InsuranceId': 'Y72120725', 'PhoneNumber': '15162075120', 'PatientSex': '1', 'Age': '75', 'Birthday': '1947-11-04'}
     time_list = ['2022-02-27 17:46:11', '2022-02-21 17:46:11', '2022-01-24 17:46:11', '2022-04-28 17:46:11',
                  '2022-01-09 17:46:11', '2020-11-20 17:46:11', '2022-03-14 17:46:11', '2020-09-08 17:46:11',
                  '2019-12-26 17:46:11',

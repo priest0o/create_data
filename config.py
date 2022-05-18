@@ -37,9 +37,9 @@ class EnvData:
 
 class AeData:
     dev_api = {
-        'scp_ae': 'QiDcmTest2',
+        'scp_ae': 'UIHHXZS67',
         'scp_ip': '10.2.58.9',
-        'scp_port': 30981,
+        'scp_port': 32610,
         'scu_ae': 'UIHPACSSERVER24',
         'scu_ip': socket.gethostbyname(socket.gethostname()),
         'scu_port': 3333

@@ -163,8 +163,8 @@ def get_times(time_count, max_delay=7, min_delay=0, formatting='%Y-%m-%d %H:%M:%
     生成时间信息：StudyTime list
     :return: 信息字典
     """
-    if time_count > max_delay - min_delay:
-        time_count = max_delay - min_delay
+    if time_count > max_delay - min_delay + 1:
+        time_count = max_delay - min_delay + 1
     now = datetime.datetime.now()
     time_list = random.sample(range(min_delay, max_delay+1), time_count)
     for t in time_list:
