@@ -81,11 +81,11 @@ if __name__ == '__main__':
     patient_count = 1
     study_per_patient = 1
     max_delay_days = 0
-    custom_modality = 'demo'
+    custom_modality = None
     is_auth = True
     img_path = None
     report_path = None
-    has_image = '1'
+    has_image = '0'
     has_report_file = True
     """
     如果需要按自定义的一张图，自定义Series数量和Image数量，设置如下参数
