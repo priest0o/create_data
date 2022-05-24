@@ -81,11 +81,11 @@ if __name__ == '__main__':
     patient_count = 1
     study_per_patient = 1
     max_delay_days = 0
-    custom_modality = None
+    custom_modality = 'CT'
     is_auth = True
     img_path = None
     report_path = None
-    has_image = '0'
+    has_image = '1'
     has_report_file = True
     """
     如果需要按自定义的一张图，自定义Series数量和Image数量，设置如下参数
@@ -123,7 +123,7 @@ if __name__ == '__main__':
 
 """
 demo数据专用患者, 替换for循环中的随机患者和日期
-    pat_info = {'PatientID': 'PID202205184239', 'PatientName': '演示', 'IdCardNo': '513430194711048539', 'InsuranceId': 'Y72120725', 'PhoneNumber': '15162075120', 'PatientSex': '1', 'Age': '75', 'Birthday': '1947-11-04'}
+    pat_info = {'PatientID': 'PID2022051853005', 'PatientName': '演示患者', 'IdCardNo': '520381193807070887', 'InsuranceId': 'Y64508858', 'PhoneNumber': '18598322583', 'PatientSex': '2', 'Age': '84', 'Birthday': '1938-07-07'}
     time_list = ['2022-02-27 17:46:11', '2022-02-21 17:46:11', '2022-01-24 17:46:11', '2022-04-28 17:46:11',
                  '2022-01-09 17:46:11', '2020-11-20 17:46:11', '2022-03-14 17:46:11', '2020-09-08 17:46:11',
                  '2019-12-26 17:46:11',

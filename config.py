@@ -6,6 +6,7 @@ import socket
 import os
 
 BASE_DIR = os.path.dirname(__file__)
+THREAD_NUM = 2
 
 """
 EnvData: 环境参数

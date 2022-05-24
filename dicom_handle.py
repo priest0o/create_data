@@ -3,14 +3,16 @@
 __author__ = 'cy'
 
 import os
-from itertools import product
+import glob
+from itertools import product, repeat
 from xpinyin import Pinyin
 from collections import defaultdict
 from pydicom import dcmread
 from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor
 from pynetdicom import AE, build_context, sop_class
 from util import Log, get_uid
-from config import BASE_DIR
+from config import BASE_DIR, THREAD_NUM
 
 logger = Log()
 pinyin = Pinyin()
@@ -40,13 +42,18 @@ def c_store(save_info, ae_config):
         raise ConnectionError
     logger.info('DICOM server init success')
     logger.info('start c-store')
-    for root, path, files in os.walk(filepath):
-        for file in tqdm(files, desc='归档中....'):
-            file_path = os.path.join(root, file)
-            ds = dcmread(file_path, force=True)
-            assoc.send_c_store(ds)
+    re_path = f'{filepath}{os.sep}**{os.sep}*.dcm'
+    with ThreadPoolExecutor(max_workers=THREAD_NUM) as execute:
+        list(tqdm(execute.map(send, glob.iglob(re_path, recursive=True), repeat(assoc)), desc='归档中'))
     logger.info('c-store finish')
     assoc.release()
+
+
+def send(file, assoc):
+    ds = dcmread(file, force=True)
+    status = assoc.send_c_store(ds)
+    if status and status.Status != 0:
+        logger.error(f'{file} c_store fail--code {status.Status},  please check')
 
 
 def create_new_study(filepath, **kwargs):
@@ -72,34 +79,34 @@ def create_new_study(filepath, **kwargs):
     if kwargs.get('PatientName', None):
         kwargs['PatientName'] = pinyin.get_pinyin(kwargs['PatientName'], splitter=' ').title()
     if os.path.isdir(filepath):  # 遍历原始文件生成新文件
-        for root, path, files in os.walk(filepath):
-            for file in tqdm(files, desc='生成新检查中....'):
-                if not file.endswith('dcm'):
-                    continue
-                file_path = os.path.join(root, file)
-                ds = dcmread(file_path, force=True)
-                try:
-                    media_storage_sop_class_uid_list.add(ds.file_meta.MediaStorageSOPClassUID)
-                except AttributeError:
-                    logger.warning(f'{file} has no attribute MediaStorageSOPClassUID')
-                try:
-                    original_series = ds['SeriesNumber'].value
-                except KeyError:
-                    logger.warning(f'{file} has no attribute SeriesNumber, 丢弃')
-                    continue
-                sop_uid = get_uid('SOPInstanceUID')
-                if not series_dict[original_series]:
-                    series_dict[original_series] += 1
-                    series_uid = get_uid('SeriesInstanceUID')
-                    save_path = os.path.join(save_root_dir, series_uid)
-                    os.mkdir(save_path)
-                kwargs.update({'SeriesInstanceUID': series_uid, 'SOPInstanceUID': sop_uid})
-                try:
-                    for tag, value in kwargs.items():
-                        ds[tag].value = value
-                    ds.save_as(os.path.join(save_path, f'{sop_uid}.dcm'), write_like_original=False)
-                except Exception as e:
-                    logger.error(e)
+        re_path = f'{filepath}{os.sep}**{os.sep}*.dcm'
+        for file in tqdm(glob.iglob(re_path, recursive=True), desc='生成新检查中....'):
+            if not file.endswith('dcm'):
+                continue
+            file_path = file
+            ds = dcmread(file_path, force=True)
+            try:
+                media_storage_sop_class_uid_list.add(ds.file_meta.MediaStorageSOPClassUID)
+            except AttributeError:
+                logger.warning(f'{file} has no attribute MediaStorageSOPClassUID')
+            try:
+                original_series = ds['SeriesNumber'].value
+            except KeyError:
+                logger.warning(f'{file} has no attribute SeriesNumber, 丢弃')
+                continue
+            sop_uid = get_uid('SOPInstanceUID')
+            if not series_dict[original_series]:
+                series_dict[original_series] += 1
+                series_uid = get_uid('SeriesInstanceUID')
+                save_path = os.path.join(save_root_dir, series_uid)
+                os.mkdir(save_path)
+            kwargs.update({'SeriesInstanceUID': series_uid, 'SOPInstanceUID': sop_uid})
+            try:
+                for tag, value in kwargs.items():
+                    ds[tag].value = value
+                ds.save_as(os.path.join(save_path, f'{sop_uid}.dcm'), write_like_original=False)
+            except Exception as e:
+                logger.error(e)
     elif os.path.isfile(filepath):  # 基于单文件生成
         if not filepath.endswith('dcm'):
             raise ValueError(f'{filepath} is not dcm file')
