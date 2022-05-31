@@ -57,7 +57,7 @@ def get_token(url, app_id, app_key):
     res_post_get_token = requests.post(url=get_token_url, headers=get_token_header, params=params_dic)
     if res_post_get_token.status_code != 200:
         logger.error("环境获取token失败")
-        access_token = r'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxNDE3MTU3ODQxMDY0ODk0NTAyIiwiY2xpZW50SWQiOiJENHF2V3hiWVBjNmR5NWZVIiwicGVybWlzc2lvbnMiOltdLCJyb2xlcyI6W10sImlzcyI6Imh0dHBzOi8vYXV0aC1hZG1pbi1zaXQtYXBpLnVpaGNsb3VkLmNuL3YyIiwiZXhwIjoxNjM4ODU0NjIyLCJ0cCI6ImNjZyIsImlhdCI6MTYzODg0MDIyMn0.Sf-gTSkEziQA05wxLwHPZdeuHVi0XfpUZ59AEt751aAK9txmH2eg0s3iG0zeu4dnJeHmT_72lnQjtJ76N1oWbnzvNtMdzGtrYxm_3sYW-7yx3xDQfQWW_lEPBPpXgDWl8BMhNQbGEj3DawxpyANlAIYRdokaSrXMdpb5Es5J2B9t0Qi8YF050uED4XXiqqmQ_dLvCwXWOGdRp62rrempmdIJSsSdR5i_iSLezIsu9NdBkxCL5zcjTFaSzkU_JnxO7kttq-_oFVdkz6l018ihEcjFRVG1-7BjwDfHRJGTRiCPW9Io93Bza27VNPhQCyXiRMElZ8PVG2m6wItr2RgZIA'
+        access_token = r'--------'
     else:
         res_post_get_token.content.decode("utf-8")
         access_token = res_post_get_token.json()['access_token']
